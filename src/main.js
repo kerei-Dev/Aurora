@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import './style.css'
 
-// 1. Create a scene
+// 1. Scene
 const scene = new THREE.Scene()
 
-// 2. Create a camera
+// 2. Camera
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
@@ -12,32 +12,60 @@ const camera = new THREE.PerspectiveCamera(
   1000
 )
 
-// 3. Create a renderer
+camera.position.z = 5
+
+// 3. Renderer
 const renderer = new THREE.WebGLRenderer()
 
 renderer.setSize(window.innerWidth, window.innerHeight)
 
-document.body.appendChild(renderer.domElement)
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight
+  camera.updateProjectionMatrix()
 
-// 4. Create a cube
-const geometry = new THREE.BoxGeometry()
-const material = new THREE.MeshBasicMaterial({
-  color: 0xffffff
+  renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+  )
 })
 
-const cube = new THREE.Mesh(geometry, material)
+document.body.appendChild(renderer.domElement)
 
-scene.add(cube)
 
-// 5. Move camera back
-camera.position.z = 5
+// 4. Create stars
+const starsGeometry = new THREE.BufferGeometry()
 
-// 6. Animation loop
+const starsCount = 1000
+
+const positions = new Float32Array(starsCount * 3)
+
+for (let i = 0; i < starsCount * 3; i++) {
+  positions[i] = (Math.random() - 0.5) * 100
+}
+
+starsGeometry.setAttribute(
+  'position',
+  new THREE.BufferAttribute(positions, 3)
+)
+
+const starsMaterial = new THREE.PointsMaterial({
+  color: 0xffffff,
+  size: 0.1
+})
+
+const stars = new THREE.Points(
+  starsGeometry,
+  starsMaterial
+)
+
+scene.add(stars)
+
+
+// 5. Animation loop
 function animate() {
   requestAnimationFrame(animate)
 
-  cube.rotation.x += 0.01
-  cube.rotation.y += 0.01
+  stars.rotation.y += 0.0005
 
   renderer.render(scene, camera)
 }
