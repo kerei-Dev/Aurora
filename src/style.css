@@ -4,29 +4,6 @@
   box-sizing: border-box;
 }
 
-body {
-  background: #000;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-.aurora-intro {
-  height: 100vh;
-
-  display: flex;
-  flex-direction: column;
-
-  justify-content: center;
-  align-items: center;
-
-  gap: 12px;
-}
-
-h1 {
-  letter-spacing: 8px;
-}
-
-p {
-  opacity: 0.6;
-  letter-spacing: 3px;
+canvas {
+  display: block;
 }
