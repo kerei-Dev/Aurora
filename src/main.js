@@ -1,5 +1,20 @@
 import * as THREE from 'three'
+import gsap from 'gsap'
 import './style.css'
+
+document.body.insertAdjacentHTML(
+  'beforeend',
+  `
+    <div class="aurora-overlay">
+      <p class="system-text">SYSTEM INITIALIZING...</p>
+
+     <div class="aurora-title">
+      <h1 class="aurora-heading">PROJECT AURORA</h1>
+      <button id="begin-btn">BEGIN JOURNEY</button>
+     </div>
+    </div>
+  `
+)
 
 // 1. Scene
 const scene = new THREE.Scene()
@@ -50,7 +65,9 @@ starsGeometry.setAttribute(
 
 const starsMaterial = new THREE.PointsMaterial({
   color: 0xffffff,
-  size: 0.1
+  size: 0.1,
+  transparent: true,
+  opacity: 0
 })
 
 const stars = new THREE.Points(
@@ -71,3 +88,65 @@ function animate() {
 }
 
 animate()
+
+// Aurora opening sequence
+
+const systemText = document.querySelector('.system-text')
+const auroraTitle = document.querySelector('.aurora-title')
+
+const timeline = gsap.timeline()
+
+timeline
+  .fromTo(
+    systemText,
+    { opacity: 0 },
+    { opacity: 1, duration: 1 }
+  )
+  .to(
+    starsMaterial,
+    {
+      opacity: 1,
+      duration: 3
+    }
+  )
+  .to(
+    systemText,
+    {
+      opacity: 0,
+      duration: 1,
+      delay: 1
+    }
+  )
+  .to(auroraTitle, {
+  opacity: 1,
+  duration: 0.1
+})
+.fromTo(
+  '.aurora-heading',
+  {
+    opacity: 0,
+    y: 30,
+    letterSpacing: '30px'
+  },
+  {
+    opacity: 1,
+    y: 0,
+    letterSpacing: '12px',
+    duration: 2,
+    ease: 'power3.out'
+  }
+)
+.fromTo(
+  '#begin-btn',
+  {
+    opacity: 0,
+    y: 20
+  },
+  {
+    opacity: 1,
+    y: 0,
+    duration: 1,
+    ease: 'power2.out'
+  },
+  '-=0.5'
+)

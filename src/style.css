@@ -4,6 +4,64 @@
   box-sizing: border-box;
 }
 
+body {
+  overflow: hidden;
+  background: #000;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
 canvas {
   display: block;
+}
+
+.aurora-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 10;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  pointer-events: none;
+}
+
+.system-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  letter-spacing: 4px;
+  font-size: 14px;
+}
+
+.aurora-title {
+  text-align: center;
+  opacity: 0;
+}
+
+.aurora-title h1 {
+  letter-spacing: 12px;
+  font-size: 3rem;
+  margin-bottom: 24px;
+}
+
+#begin-btn {
+  pointer-events: auto;
+
+  padding: 12px 24px;
+
+  background: transparent;
+  color: white;
+
+  border: 1px solid white;
+
+  letter-spacing: 3px;
+
+  cursor: pointer;
 }
