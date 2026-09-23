@@ -195,7 +195,38 @@ const streaks =
 
 scene.add(streaks)
 
+scene.add(streaks)
+// ========================================
+// FIRST UNIVERSE
+// ========================================
 
+const planetGeometry =
+  new THREE.SphereGeometry(
+    4,
+    64,
+    64
+  )
+
+const planetMaterial =
+  new THREE.MeshBasicMaterial({
+    color: 0x332266,
+    transparent: true,
+    opacity: 0
+  })
+
+const planet =
+  new THREE.Mesh(
+    planetGeometry,
+    planetMaterial
+  )
+
+planet.position.set(
+  0,
+  0,
+  -80
+)
+
+scene.add(planet)
 // ========================================
 // CAMERA
 // ========================================
@@ -251,7 +282,16 @@ function animate() {
     }
 
   }
-
+// Reveal the first universe
+gsap.to(
+  planetMaterial,
+  {
+    opacity: 1,
+    duration: 3,
+    delay: 2,
+    ease: 'power2.out'
+  }
+)
 
   // Tell Three.js the positions changed
   streakGeometry
@@ -504,14 +544,22 @@ beginButton.addEventListener(
       camera.position,
 
       {
-        z: -15,
+        z: -65,
 
-        duration: 4,
+        duration: 7,
 
         ease: 'power2.in'
       }
     )
-
+    gsap.to(
+  streakMaterial,
+      {
+    opacity: 0,
+    duration: 2,
+    delay: 4,
+    ease: 'power2.out'
+      }
+)
 
     // ------------------------------------
     // Accelerate starfield rotation
