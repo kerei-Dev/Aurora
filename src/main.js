@@ -17,6 +17,7 @@ document.body.insertAdjacentHTML(
       </p>
 
       <div class="aurora-title">
+
         <h1 class="aurora-heading">
           PROJECT AURORA
         </h1>
@@ -24,6 +25,7 @@ document.body.insertAdjacentHTML(
         <button id="begin-btn">
           BEGIN JOURNEY
         </button>
+
       </div>
 
     </div>
@@ -35,11 +37,11 @@ document.body.insertAdjacentHTML(
 // THREE.JS SCENE
 // ========================================
 
-// 1. Create the scene
+// Create the scene
 const scene = new THREE.Scene()
 
 
-// 2. Create the camera
+// Create the camera
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
@@ -48,7 +50,7 @@ const camera = new THREE.PerspectiveCamera(
 )
 
 
-// 3. Create the renderer
+// Create the renderer
 const renderer = new THREE.WebGLRenderer({
   antialias: true
 })
@@ -58,25 +60,37 @@ renderer.setSize(
   window.innerHeight
 )
 
-document.body.appendChild(renderer.domElement)
+document.body.appendChild(
+  renderer.domElement
+)
 
 
 // ========================================
-// STARFIELD
+// NORMAL STARFIELD
 // ========================================
 
-const starsGeometry = new THREE.BufferGeometry()
+const starsGeometry =
+  new THREE.BufferGeometry()
 
 const starsCount = 1000
 
-const positions = new Float32Array(
-  starsCount * 3
-)
+const positions =
+  new Float32Array(
+    starsCount * 3
+  )
 
-for (let i = 0; i < starsCount * 3; i++) {
+
+for (
+  let i = 0;
+  i < starsCount * 3;
+  i++
+) {
+
   positions[i] =
     (Math.random() - 0.5) * 100
+
 }
+
 
 starsGeometry.setAttribute(
   'position',
@@ -87,20 +101,99 @@ starsGeometry.setAttribute(
 )
 
 
-const starsMaterial = new THREE.PointsMaterial({
-  color: 0xffffff,
-  size: 0.1,
-  transparent: true,
-  opacity: 0
-})
+const starsMaterial =
+  new THREE.PointsMaterial({
+
+    color: 0xffffff,
+
+    size: 0.1,
+
+    transparent: true,
+
+    opacity: 0
+
+  })
 
 
-const stars = new THREE.Points(
-  starsGeometry,
-  starsMaterial
-)
+const stars =
+  new THREE.Points(
+    starsGeometry,
+    starsMaterial
+  )
+
 
 scene.add(stars)
+
+
+// ========================================
+// HYPERSPACE STREAKS
+// ========================================
+
+const streakGeometry =
+  new THREE.BufferGeometry()
+
+
+const streakCount = 500
+
+
+const streakPositions =
+  new Float32Array(
+    streakCount * 3
+  )
+
+
+for (
+  let i = 0;
+  i < streakCount * 3;
+  i += 3
+) {
+
+  // X position
+  streakPositions[i] =
+    (Math.random() - 0.5) * 100
+
+  // Y position
+  streakPositions[i + 1] =
+    (Math.random() - 0.5) * 100
+
+  // Z position
+  streakPositions[i + 2] =
+    (Math.random() - 0.5) * 100
+
+}
+
+
+streakGeometry.setAttribute(
+  'position',
+  new THREE.BufferAttribute(
+    streakPositions,
+    3
+  )
+)
+
+
+const streakMaterial =
+  new THREE.PointsMaterial({
+
+    color: 0xffffff,
+
+    size: 0.12,
+
+    transparent: true,
+
+    opacity: 0
+
+  })
+
+
+const streaks =
+  new THREE.Points(
+    streakGeometry,
+    streakMaterial
+  )
+
+
+scene.add(streaks)
 
 
 // ========================================
@@ -110,20 +203,74 @@ scene.add(stars)
 camera.position.z = 5
 
 
+// Speed of hyperspace streaks
+let streakSpeed = 0.5
+
+
+// ========================================
+// ANIMATION LOOP
+// ========================================
 
 function animate() {
 
-  requestAnimationFrame(animate)
+  requestAnimationFrame(
+    animate
+  )
 
+
+  // Slowly rotate normal starfield
   stars.rotation.y += 0.0005
 
+
+  // Get streak positions
+  const streakPositions =
+    streakGeometry
+      .attributes
+      .position
+      .array
+
+
+  // Move each streak forward
+  for (
+    let i = 2;
+    i < streakPositions.length;
+    i += 3
+  ) {
+
+    streakPositions[i] +=
+      streakSpeed
+
+
+    // Reset streak when it goes too far
+    if (
+      streakPositions[i] > 50
+    ) {
+
+      streakPositions[i] = -50
+
+    }
+
+  }
+
+
+  // Tell Three.js the positions changed
+  streakGeometry
+    .attributes
+    .position
+    .needsUpdate = true
+
+
+  // Render the scene
   renderer.render(
     scene,
     camera
   )
+
 }
 
+
 animate()
+
 
 // ========================================
 // RESPONSIVE WINDOW
@@ -137,7 +284,9 @@ window.addEventListener(
       window.innerWidth /
       window.innerHeight
 
+
     camera.updateProjectionMatrix()
+
 
     renderer.setSize(
       window.innerWidth,
@@ -153,10 +302,15 @@ window.addEventListener(
 // ========================================
 
 const systemText =
-  document.querySelector('.system-text')
+  document.querySelector(
+    '.system-text'
+  )
+
 
 const auroraTitle =
-  document.querySelector('.aurora-title')
+  document.querySelector(
+    '.aurora-title'
+  )
 
 
 const timeline =
@@ -168,76 +322,105 @@ timeline
   // SYSTEM INITIALIZING appears
   .fromTo(
     systemText,
+
     {
       opacity: 0
     },
+
     {
       opacity: 1,
+
       duration: 1
     }
   )
 
+
   // Stars slowly appear
   .to(
     starsMaterial,
+
     {
       opacity: 1,
+
       duration: 3
     }
   )
 
+
   // System text disappears
   .to(
     systemText,
+
     {
       opacity: 0,
+
       duration: 1,
+
       delay: 1
     }
   )
 
+
   // Reveal title container
   .to(
     auroraTitle,
+
     {
       opacity: 1,
+
       duration: 0.1
     }
   )
 
+
   // PROJECT AURORA enters
   .fromTo(
     '.aurora-heading',
+
     {
       opacity: 0,
+
       y: 30,
+
       letterSpacing: '30px'
     },
+
     {
       opacity: 1,
+
       y: 0,
+
       letterSpacing: '12px',
+
       duration: 2,
+
       ease: 'power3.out'
     }
   )
 
-  // Button appears
+
+  // BEGIN JOURNEY button appears
   .fromTo(
     '#begin-btn',
+
     {
       opacity: 0,
+
       y: 20
     },
+
     {
       opacity: 1,
+
       y: 0,
+
       duration: 1,
+
       ease: 'power2.out'
     },
+
     '-=0.5'
   )
-
 
 
 // ========================================
@@ -245,42 +428,104 @@ timeline
 // ========================================
 
 const beginButton =
-  document.querySelector('#begin-btn')
+  document.querySelector(
+    '#begin-btn'
+  )
 
 
 beginButton.addEventListener(
   'click',
   () => {
 
-    // Disable button so it cannot be clicked twice
+    // Prevent multiple clicks
     beginButton.disabled = true
 
-    // Fade out the title and button
+
+    // ------------------------------------
+    // Activate hyperspace
+    // ------------------------------------
+
+    gsap.to(
+      streakMaterial,
+
+      {
+        opacity: 1,
+
+        duration: 1
+      }
+    )
+
+
+    // ------------------------------------
+    // Accelerate hyperspace
+    // ------------------------------------
+
+    gsap.to(
+      { speed: 0.5 },
+
+      {
+        speed: 3,
+
+        duration: 3,
+
+        onUpdate: function () {
+
+          streakSpeed =
+            this.targets()[0].speed
+
+        }
+
+      }
+    )
+
+
+    // ------------------------------------
+    // Fade out title
+    // ------------------------------------
+
     gsap.to(
       '.aurora-title',
+
       {
         opacity: 0,
+
         duration: 1.5,
+
         ease: 'power2.inOut'
       }
     )
 
-    // Move the camera deeper into space
+
+    // ------------------------------------
+    // Move camera
+    // ------------------------------------
+
     gsap.to(
       camera.position,
+
       {
         z: -15,
+
         duration: 4,
+
         ease: 'power2.in'
       }
     )
 
-    // Accelerate the starfield
+
+    // ------------------------------------
+    // Accelerate starfield rotation
+    // ------------------------------------
+
     gsap.to(
       stars.rotation,
+
       {
-        y: stars.rotation.y + 2,
+        y:
+          stars.rotation.y + 2,
+
         duration: 4,
+
         ease: 'power2.in'
       }
     )
