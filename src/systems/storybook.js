@@ -118,6 +118,8 @@ export class StorybookEngine {
         subtitle: 'Realm of Maomao',
         realmColor: '#10b981',
         warpColor: 0x10b981,
+        audioTrack: '/audio/maomao.m4a',
+        audioDuration: 40,
         background: '/backgrounds/apothecary_grove.jpg',
         characters: [
           { name: 'Maomao', img: '/characters/maomao.jpg', side: 'center' }
@@ -158,6 +160,8 @@ export class StorybookEngine {
         subtitle: 'Realm of Frieren the Mage',
         realmColor: '#38bdf8',
         warpColor: 0x38bdf8,
+        audioTrack: '/audio/frieren.m4a',
+        audioDuration: 40,
         background: '/backgrounds/apothecary_grove.jpg',
         characters: [
           { name: 'Frieren', img: '/characters/frieren.jpg', side: 'center' }
@@ -198,6 +202,8 @@ export class StorybookEngine {
         subtitle: 'Tanjiro, Nezuko & Giyu',
         realmColor: '#06b6d4',
         warpColor: 0x06b6d4,
+        audioTrack: '/audio/demonslayer.m4a',
+        audioDuration: 0,
         background: '/backgrounds/wisteria_forest.jpg',
         characters: [
           { name: 'Tanjiro & Nezuko & Giyu', img: '/characters/demon_slayer_trio.jpg', side: 'center' }
@@ -238,6 +244,8 @@ export class StorybookEngine {
         subtitle: 'Loid, Yor & Anya',
         realmColor: '#f97316',
         warpColor: 0xf97316,
+        audioTrack: '/audio/forgers.m4a',
+        audioDuration: 0,
         background: '/backgrounds/forger_home.jpg',
         characters: [
           { name: 'The Forger Family', img: '/characters/forger_family.jpg', side: 'center' }
@@ -493,6 +501,7 @@ export class StorybookEngine {
 
   renderChapter(ch) {
     this.container.classList.add('fading')
+    audioEngine.stopRealmBgm()
 
     setTimeout(() => {
       if (ch.id === 'prologue') {
@@ -503,6 +512,10 @@ export class StorybookEngine {
         this.renderStandardRealm(ch)
       }
       this.container.classList.remove('fading')
+
+      if (ch.audioTrack) {
+        audioEngine.playRealmBgm(ch.audioTrack, ch.audioDuration || 0)
+      }
     }, 200)
   }
 

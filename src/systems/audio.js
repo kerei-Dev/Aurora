@@ -11,6 +11,8 @@ class AudioEngine {
     this.lullabyAudio = null
     this.lullabyUrl = null
     this.isLullabyPlaying = false
+    this.currentBgm = null
+    this.bgmTimer = null
   }
 
   initContext() {
@@ -30,8 +32,57 @@ class AudioEngine {
     if (this.muted) {
       if (this.lullabyAudio) this.lullabyAudio.pause()
       this.isLullabyPlaying = false
+      if (this.currentBgm) this.currentBgm.pause()
+    } else {
+      if (this.currentBgm) {
+        this.currentBgm.play().catch(e => console.log('BGM play blocked:', e))
+      }
     }
     return this.muted
+  }
+
+  playRealmBgm(trackUrl, maxDuration = 0) {
+    this.stopRealmBgm()
+    if (!trackUrl) return
+
+    try {
+      this.currentBgm = new Audio(trackUrl)
+      this.currentBgm.volume = 0.55
+      this.currentBgm.loop = maxDuration === 0
+
+      if (!this.muted) {
+        this.currentBgm.play().catch(e => console.log('Autoplay audio blocked until user click:', e))
+      }
+
+      if (maxDuration > 0) {
+        this.bgmTimer = setTimeout(() => {
+          if (this.currentBgm) {
+            let vol = this.currentBgm.volume
+            const fade = setInterval(() => {
+              vol = Math.max(0, vol - 0.05)
+              if (this.currentBgm) this.currentBgm.volume = vol
+              if (vol <= 0) {
+                clearInterval(fade)
+                this.stopRealmBgm()
+              }
+            }, 100)
+          }
+        }, maxDuration * 1000)
+      }
+    } catch (e) {
+      console.warn('Failed to load realm BGM:', e)
+    }
+  }
+
+  stopRealmBgm() {
+    if (this.bgmTimer) {
+      clearTimeout(this.bgmTimer)
+      this.bgmTimer = null
+    }
+    if (this.currentBgm) {
+      this.currentBgm.pause()
+      this.currentBgm = null
+    }
   }
 
   // Play a gentle celestial bell chime
