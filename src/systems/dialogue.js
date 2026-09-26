@@ -83,13 +83,36 @@ export class DialogueSystem {
     const rightName = document.getElementById('name-right')
 
     if (universe.includes('miraculous') || universe.includes('paris')) {
+      this.container.classList.add('miraculous-theme')
+      leftStage.style.display = 'flex'
+      rightStage.style.display = 'flex'
       leftStage.className = 'stage-character ladybug-stage'
       rightStage.className = 'stage-character catnoir-stage'
       leftPortrait.src = '/characters/ladybug.jpg'
       rightPortrait.src = '/characters/cat_noir.jpg'
       leftName.textContent = 'Ladybug'
       rightName.textContent = 'Cat Noir'
+    } else if (universe.includes('apothecary') || universe.includes('frieren') || universe.includes('maomao')) {
+      this.container.classList.remove('miraculous-theme')
+      leftStage.style.display = 'flex'
+      rightStage.style.display = 'flex'
+      leftStage.className = 'stage-character maomao-stage'
+      rightStage.className = 'stage-character frieren-stage'
+      leftPortrait.src = '/characters/maomao.jpg'
+      rightPortrait.src = '/characters/frieren.jpg'
+      leftName.textContent = 'Maomao'
+      rightName.textContent = 'Frieren'
+    } else if (universe.includes('eras') || universe.includes('melody') || universe.includes('taylor')) {
+      this.container.classList.remove('miraculous-theme')
+      leftStage.style.display = 'flex'
+      rightStage.style.display = 'none'
+      leftStage.className = 'stage-character taylor-stage'
+      leftPortrait.src = '/characters/taylor_swift.jpg'
+      leftName.textContent = 'Taylor Swift'
     } else {
+      this.container.classList.remove('miraculous-theme')
+      leftStage.style.display = 'flex'
+      rightStage.style.display = 'flex'
       // Default to Thalia & Varkas (Forgotten Field)
       leftStage.className = 'stage-character thalia-stage'
       rightStage.className = 'stage-character varkas-stage'

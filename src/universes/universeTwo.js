@@ -1,6 +1,6 @@
 // ========================================
 // PROJECT AURORA - UNIVERSE 2: MIRACULOUS PARIS
-// Featuring: Ladybug & Cat Noir welcoming TIYA
+// Featuring: Ladybug & Cat Noir in Paris welcoming TIYA
 // ========================================
 
 import * as THREE from 'three'
@@ -10,136 +10,115 @@ import { gameState } from '../systems/state.js'
 
 let universeTwoGroup = null
 let parisSparkles = null
-let akumaButterfly = null
 let isInitialized = false
 
 export function initUniverseTwo({ scene, camera, renderer }) {
   if (isInitialized) return
   isInitialized = true
 
-  // 1. Atmosphere Flash Transition
+  // Clean transition
   const flashOverlay = document.createElement('div')
-  flashOverlay.className = 'celestial-flash miraculous-flash'
+  flashOverlay.className = 'celestial-flash'
   document.body.appendChild(flashOverlay)
 
   // Zoom camera into Planet 2
   gsap.to(camera.position, {
-    z: -79.2,
+    z: -199.2,
     duration: 2.2,
     ease: 'power2.in',
     onComplete: () => {
       flashOverlay.classList.add('flash-active')
 
       setTimeout(() => {
-        buildParisRooftopScene(scene)
+        buildParisScene(scene)
 
-        // Position camera on the Parisian rooftop facing Ladybug, Cat Noir, and the Eiffel Tower
-        camera.position.set(0, 2.4, -69)
-        camera.lookAt(0, 2.6, -82)
+        // Position camera to see Paris, the Eiffel Tower, Ladybug, and Cat Noir
+        camera.position.set(0, 2.3, -189)
+        camera.lookAt(0, 2.4, -202)
 
         flashOverlay.classList.remove('flash-active')
-        setTimeout(() => flashOverlay.remove(), 1200)
+        setTimeout(() => flashOverlay.remove(), 800)
 
         // Begin dialogue sequence
         startMiraculousDialogue()
-      }, 500)
+      }, 450)
     }
   })
 }
 
-function buildParisRooftopScene(scene) {
+function buildParisScene(scene) {
   universeTwoGroup = new THREE.Group()
-  universeTwoGroup.position.set(0, 0, -80)
+  universeTwoGroup.position.set(0, 0, -200)
 
-  // 1. Parisian Rooftop (Slanted Slate Roof)
-  const roofGeo = new THREE.BoxGeometry(24, 1.2, 16)
-  const roofMat = new THREE.MeshStandardMaterial({
-    color: 0x1e293b, // Zinc blue slate roof
-    roughness: 0.65,
-    metalness: 0.2
-  })
-  const roof = new THREE.Mesh(roofGeo, roofMat)
-  roof.position.set(0, 0, 0)
-  universeTwoGroup.add(roof)
+  const textureLoader = new THREE.TextureLoader()
 
-  // Chimney stacks (Classic Parisian Terracotta Chimneys)
-  const chimneyMat = new THREE.MeshStandardMaterial({
-    color: 0xb45309,
-    roughness: 0.8
-  })
-  for (let x = -7; x <= 7; x += 3.5) {
-    const chimney = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.8, 0.7), chimneyMat)
-    chimney.position.set(x, 1.4, -4.5)
-    universeTwoGroup.add(chimney)
+  // 1. Authentic Paris Scenic Backdrop (Eiffel Tower & Seine River)
+  const parisTex = textureLoader.load('/backgrounds/paris_scene.jpg')
+  parisTex.colorSpace = THREE.SRGBColorSpace
 
-    // Clay pots on top
-    const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.25, 0.6, 12), chimneyMat)
-    pot.position.set(x, 2.5, -4.5)
-    universeTwoGroup.add(pot)
-  }
-
-  // 2. Glowing Eiffel Tower in the Twilight Horizon
-  const eiffelGroup = new THREE.Group()
-  eiffelGroup.position.set(0, 0, -18)
-
-  const eiffelMat = new THREE.MeshBasicMaterial({
-    color: 0xfef08a,
+  const parisGeo = new THREE.PlaneGeometry(36, 28)
+  const parisMat = new THREE.MeshBasicMaterial({
+    map: parisTex,
     transparent: true,
-    opacity: 0.85
+    opacity: 0.98
   })
+  const parisBackdrop = new THREE.Mesh(parisGeo, parisMat)
+  parisBackdrop.position.set(0, 10, -12)
+  universeTwoGroup.add(parisBackdrop)
 
-  // Lower Arch & Legs
-  const leg1 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.5, 6, 8), eiffelMat)
-  leg1.position.set(-2.2, 3, 0)
-  leg1.rotation.z = -0.18
-  const leg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.5, 6, 8), eiffelMat)
-  leg2.position.set(2.2, 3, 0)
-  leg2.rotation.z = 0.18
+  // 2. Parisian Promenade Ground (Cobblestone / Stone Terrace)
+  const groundGeo = new THREE.CircleGeometry(22, 64)
+  const groundMat = new THREE.MeshStandardMaterial({
+    color: 0x334155,
+    roughness: 0.8,
+    metalness: 0.1,
+    emissive: 0x0f172a,
+    emissiveIntensity: 0.3,
+    side: THREE.DoubleSide
+  })
+  const ground = new THREE.Mesh(groundGeo, groundMat)
+  ground.rotation.x = -Math.PI / 2
+  ground.position.y = 0
+  universeTwoGroup.add(ground)
 
-  // First & Second Platform
-  const plat1 = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.4, 1.5), eiffelMat)
-  plat1.position.set(0, 5.8, 0)
-  const plat2 = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.35, 1.2), eiffelMat)
-  plat2.position.set(0, 9.2, 0)
+  // Decorative Paris Miraculous Ring
+  const ringGeo = new THREE.RingGeometry(8, 16, 64)
+  const ringMat = new THREE.MeshBasicMaterial({
+    color: 0xef4444,
+    transparent: true,
+    opacity: 0.2,
+    side: THREE.DoubleSide
+  })
+  const ring = new THREE.Mesh(ringGeo, ringMat)
+  ring.rotation.x = -Math.PI / 2
+  ring.position.y = 0.05
+  universeTwoGroup.add(ring)
 
-  // Upper Tower & Spire
-  const midTower = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 1.3, 5, 8), eiffelMat)
-  midTower.position.set(0, 8.2, 0)
-  const spire = new THREE.Mesh(new THREE.ConeGeometry(0.4, 7, 8), eiffelMat)
-  spire.position.set(0, 13.5, 0)
+  // 3. Bright Parisian Daytime Sunlight
+  const parisSun = new THREE.DirectionalLight(0xfffbeb, 3.2)
+  parisSun.position.set(6, 18, -4)
+  parisSun.target.position.set(0, 2, -2)
+  universeTwoGroup.add(parisSun)
+  universeTwoGroup.add(parisSun.target)
 
-  // Beacon Light on Spire Tip
-  const beaconGeo = new THREE.SphereGeometry(0.35, 16, 16)
-  const beaconMat = new THREE.MeshBasicMaterial({ color: 0xffffff })
-  const beacon = new THREE.Mesh(beaconGeo, beaconMat)
-  beacon.position.set(0, 17, 0)
+  const parisSkyAmbient = new THREE.AmbientLight(0x60a5fa, 1.4)
+  universeTwoGroup.add(parisSkyAmbient)
 
-  eiffelGroup.add(leg1, leg2, plat1, midTower, plat2, spire, beacon)
-  universeTwoGroup.add(eiffelGroup)
-
-  // Eiffel Tower Beacon Rotating Light
-  const beaconLight = new THREE.SpotLight(0xfef08a, 4, 30, Math.PI / 6, 0.5)
-  beaconLight.position.set(0, 17, -18)
-  beaconLight.target.position.set(10, 8, -5)
-  universeTwoGroup.add(beaconLight)
-  universeTwoGroup.add(beaconLight.target)
-
-  // 3. Magical Sparkles (Pink Ladybug & Green Cat Noir glimmers)
-  const sparkleCount = 220
+  // 4. Floating Magical Sparkles (Pink Ladybug & Green Cat Noir)
+  const sparkleCount = 180
   const sparkleGeo = new THREE.BufferGeometry()
   const sparklePos = new Float32Array(sparkleCount * 3)
   const sparkleColors = new Float32Array(sparkleCount * 3)
 
   for (let i = 0; i < sparkleCount * 3; i += 3) {
     sparklePos[i] = (Math.random() - 0.5) * 22
-    sparklePos[i + 1] = Math.random() * 9 + 0.5
+    sparklePos[i + 1] = Math.random() * 10 + 0.5
     sparklePos[i + 2] = (Math.random() - 0.5) * 22
 
-    // Alternate pink (#ec4899) and green (#22c55e)
     if (i % 2 === 0) {
       sparkleColors[i] = 0.95
-      sparkleColors[i + 1] = 0.28
-      sparkleColors[i + 2] = 0.6
+      sparkleColors[i + 1] = 0.25
+      sparkleColors[i + 2] = 0.4
     } else {
       sparkleColors[i] = 0.15
       sparkleColors[i + 1] = 0.85
@@ -160,32 +139,18 @@ function buildParisRooftopScene(scene) {
   parisSparkles = new THREE.Points(sparkleGeo, sparkleMat)
   universeTwoGroup.add(parisSparkles)
 
-  // 4. In-World 3D Standees (Ladybug & Cat Noir)
-  const textureLoader = new THREE.TextureLoader()
-
+  // 5. In-World Character Standees (Ladybug & Cat Noir in Paris)
   const ladybugTex = textureLoader.load('/characters/ladybug.jpg')
-  const ladybugMat = new THREE.MeshBasicMaterial({ map: ladybugTex, transparent: true, opacity: 0.95 })
-  const ladybugPlane = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 2.3), ladybugMat)
-  ladybugPlane.position.set(-1.1, 2, -2)
+  const ladybugMat = new THREE.MeshBasicMaterial({ map: ladybugTex, transparent: true, opacity: 0.98 })
+  const ladybugPlane = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 2.2), ladybugMat)
+  ladybugPlane.position.set(-1.1, 1.8, -2)
   universeTwoGroup.add(ladybugPlane)
 
   const catNoirTex = textureLoader.load('/characters/cat_noir.jpg')
-  const catNoirMat = new THREE.MeshBasicMaterial({ map: catNoirTex, transparent: true, opacity: 0.95 })
+  const catNoirMat = new THREE.MeshBasicMaterial({ map: catNoirTex, transparent: true, opacity: 0.98 })
   const catNoirPlane = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 2.3), catNoirMat)
-  catNoirPlane.position.set(1.1, 2, -2)
+  catNoirPlane.position.set(1.1, 1.9, -2)
   universeTwoGroup.add(catNoirPlane)
-
-  // Parisian Twilight Ambient & Neon Rim Lights
-  const parisAmbient = new THREE.AmbientLight(0x1e1b4b, 1.4)
-  universeTwoGroup.add(parisAmbient)
-
-  const ladybugLight = new THREE.PointLight(0xef4444, 2.2, 15)
-  ladybugLight.position.set(-2, 2.5, -1)
-  universeTwoGroup.add(ladybugLight)
-
-  const catLight = new THREE.PointLight(0x22c55e, 2.2, 15)
-  catLight.position.set(2, 2.5, -1)
-  universeTwoGroup.add(catLight)
 
   scene.add(universeTwoGroup)
 
@@ -194,7 +159,7 @@ function buildParisRooftopScene(scene) {
     x: 1,
     y: 1,
     z: 1,
-    duration: 1.8,
+    duration: 1.6,
     ease: 'power3.out'
   })
 }
@@ -203,11 +168,17 @@ export function updateUniverseTwo() {
   if (parisSparkles && parisSparkles.geometry) {
     const pos = parisSparkles.geometry.attributes.position.array
     for (let i = 1; i < pos.length; i += 3) {
-      pos[i] += 0.009
-      if (pos[i] > 9) pos[i] = 0.5
+      pos[i] += 0.008
+      if (pos[i] > 10) pos[i] = 0.5
     }
     parisSparkles.geometry.attributes.position.needsUpdate = true
-    parisSparkles.rotation.y += 0.0007
+    parisSparkles.rotation.y += 0.0006
+  }
+}
+
+export function cleanupUniverseTwo() {
+  if (universeTwoGroup) {
+    universeTwoGroup.visible = false
   }
 }
 
@@ -216,7 +187,7 @@ function startMiraculousDialogue() {
     {
       speaker: 'Cat Noir',
       universe: 'Miraculous Paris',
-      text: "Well, well, well! Look what the cat dragged in! Or should I say... who just made a paws-itively miraculous entrance?"
+      text: "Well, well, well! Look who just made a paws-itively miraculous entrance in Paris!"
     },
     {
       speaker: 'Ladybug',
@@ -256,14 +227,9 @@ function startMiraculousDialogue() {
   ]
 
   dialogueSystem.start(script, () => {
-    // Launch interactive mini-game!
     showMiraculousChallenge()
   })
 }
-
-// ========================================
-// INTERACTIVE MINI-GAME: PLAGG SNACK & AKUMA PURIFY
-// ========================================
 
 function showMiraculousChallenge() {
   const challengeModal = document.createElement('div')
@@ -311,12 +277,12 @@ function showMiraculousChallenge() {
         feedback.innerHTML = `
           <p class="feedback-success">
             <strong>"CAMEMBERT!! MY DELICIOUS LOVE!"</strong> — Plagg<br>
-            <em>Cat Noir recharged: "Claws Out! Ready to roll, Tiya!"</em>
+            Cat Noir recharged: "Claws Out! Ready to roll, Tiya!"
           </p>
         `
         setTimeout(() => {
           showAkumaCatchStep(challengeModal)
-        }, 1800)
+        }, 1600)
       } else {
         btn.classList.add('btn-wrong')
         feedback.innerHTML = `<p class="feedback-error">Plagg: "Ew, gross! That's not Camembert! Try again, Tiya!"</p>`
@@ -337,7 +303,6 @@ function showAkumaCatchStep(modal) {
       <div class="akuma-arena" id="akuma-arena">
         <div class="akuma-target" id="akuma-target">
           <span class="akuma-icon">🦋</span>
-          <span class="akuma-glow"></span>
         </div>
       </div>
     </div>
@@ -346,11 +311,10 @@ function showAkumaCatchStep(modal) {
   const akuma = document.getElementById('akuma-target')
   let caught = false
 
-  // Animate akuma fluttering around arena
   function flutter() {
     if (caught) return
     const x = (Math.random() - 0.5) * 260
-    const y = (Math.random() - 0.5) * 160
+    const y = (Math.random() - 0.5) * 150
     gsap.to(akuma, {
       x: x,
       y: y,
@@ -364,10 +328,8 @@ function showAkumaCatchStep(modal) {
   akuma.addEventListener('click', () => {
     if (caught) return
     caught = true
-    akuma.classList.add('purified')
     akuma.querySelector('.akuma-icon').textContent = '✨ 🦋 ✨'
 
-    // Full Miraculous Cleansing wave
     const cleanseFlash = document.createElement('div')
     cleanseFlash.className = 'miraculous-cleanse-wave'
     cleanseFlash.innerHTML = `
@@ -380,16 +342,15 @@ function showAkumaCatchStep(modal) {
 
     setTimeout(() => {
       cleanseFlash.classList.add('cleanse-active')
-    }, 50)
+    }, 40)
 
     setTimeout(() => {
       cleanseFlash.classList.remove('cleanse-active')
-      setTimeout(() => cleanseFlash.remove(), 800)
+      setTimeout(() => cleanseFlash.remove(), 700)
       modal.remove()
 
-      // Show Victory & Star Fragment #2 Reward Modal!
       showMiraculousRewardModal()
-    }, 2800)
+    }, 2600)
   })
 }
 
@@ -397,11 +358,11 @@ function showMiraculousRewardModal() {
   const modal = document.createElement('div')
   modal.className = 'aurora-modal-backdrop'
   modal.innerHTML = `
-    <div class="aurora-gift-card miraculous-reward-card">
+    <div class="aurora-gift-card">
       <div class="gift-sparkles">🐞 🐾 ✨ 🐾 🐞</div>
       <h2 class="gift-title">Pound It! 👊 Happy Birthday Tiya!</h2>
 
-      <div class="plushie-showcase miraculous-showcase">
+      <div class="plushie-showcase">
         <div class="plushie-art">
           <span class="plush-chibi ladybug-tag">🐞 Ladybug</span>
           <span class="plush-heart">❤️</span>
@@ -409,17 +370,17 @@ function showMiraculousRewardModal() {
         </div>
         <p class="plushie-name">Miraculous Duo Lucky Charm</p>
         <p class="plushie-desc">
-          "A pair of handcrafted Parisian superhero charms with Tikki and Plagg! 
+          A pair of handcrafted Parisian superhero charms with Tikki and Plagg! 
           Infused with endless good luck, heroic courage, and Cat Noir's corniest jokes. 
-          Presented with love to Tiya on her special birthday!"
+          Presented with love to Tiya on her special birthday!
         </p>
       </div>
 
-      <div class="fragment-reward miraculous-fragment">
+      <div class="fragment-reward">
         <div class="fragment-icon">✦</div>
         <div class="fragment-info">
           <strong>Star Fragment #2: Lucky Spark</strong>
-          <span>Purified and charged by the magic of Miraculous Paris! 2 Star Fragments secured!</span>
+          <span>Purified and charged by the magic of Paris! 2 Star Fragments secured!</span>
         </div>
       </div>
 
@@ -432,8 +393,8 @@ function showMiraculousRewardModal() {
 
   gsap.fromTo(
     '.aurora-gift-card',
-    { scale: 0.7, opacity: 0, y: 30 },
-    { scale: 1, opacity: 1, y: 0, duration: 0.8, ease: 'back.out(1.7)' }
+    { scale: 0.8, opacity: 0, y: 20 },
+    { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
   )
 
   document.getElementById('claim-miraculous-btn').addEventListener('click', () => {
@@ -450,9 +411,9 @@ function showMiraculousRewardModal() {
     })
 
     gsap.to('.aurora-gift-card', {
-      scale: 0.8,
+      scale: 0.85,
       opacity: 0,
-      duration: 0.5,
+      duration: 0.4,
       ease: 'power2.in',
       onComplete: () => {
         modal.remove()
@@ -466,7 +427,7 @@ function showPlanetThreeRiddleModal() {
   const riddleModal = document.createElement('div')
   riddleModal.className = 'aurora-modal-backdrop'
   riddleModal.innerHTML = `
-    <div class="aurora-riddle-card miraculous-riddle">
+    <div class="aurora-riddle-card">
       <div class="riddle-header">
         <span class="riddle-tag">✦ Clue For Tiya ✦</span>
         <h2>Riddle of Planet 3</h2>
@@ -474,17 +435,17 @@ function showPlanetThreeRiddleModal() {
 
       <div class="riddle-scroll">
         <p class="riddle-verse">
-          "Pound it, Tiya! Paris is saved and shining bright with cheer,<br>
+          Pound it, Tiya! Paris is saved and shining bright with cheer,<br>
           Two star fragments collected as the Final Star draws near!<br><br>
           Where will the celestial currents guide your ship next time?<br>
           What legendary heroes will await your birthday climb?<br><br>
           Keep your courage burning, Tiya, your journey is pure art—<br>
-          Every fragment gathered brings you closer to the heart!"
+          Every fragment gathered brings you closer to the heart!
         </p>
       </div>
 
       <div class="riddle-dialogue-signoff">
-        <em>"Stay miraculous, Tiya! Pound it! 👊"</em>
+        <span class="signoff-quote">"Stay miraculous, Tiya! Pound it! 👊"</span>
         <span>— Ladybug & Cat Noir</span>
       </div>
 
@@ -497,18 +458,22 @@ function showPlanetThreeRiddleModal() {
 
   gsap.fromTo(
     '.aurora-riddle-card',
-    { scale: 0.8, opacity: 0, y: 40 },
-    { scale: 1, opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }
+    { scale: 0.8, opacity: 0, y: 20 },
+    { scale: 1, opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
   )
 
   document.getElementById('next-realm-btn').addEventListener('click', () => {
     gsap.to('.aurora-riddle-card', {
-      scale: 0.8,
+      scale: 0.85,
       opacity: 0,
-      duration: 0.5,
+      duration: 0.4,
       onComplete: () => {
         riddleModal.remove()
-        gameState.showFloatingNotice("🌟 Planet 2 Complete! 2/X Star Fragments collected by Tiya!")
+        gameState.showFloatingNotice("🌟 Planet 2 Complete! 2 Star Fragments collected by Tiya!")
+
+        if (typeof window.startTravelToUniverseThree === 'function') {
+          window.startTravelToUniverseThree()
+        }
       }
     })
   })
